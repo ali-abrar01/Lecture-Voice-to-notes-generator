@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lecture Voice-to-Notes Generator</title>
+  <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ── Background Orbs (decorative) ──────────────────────────────────── -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">🎓</span>
+        <span class="logo-text">LectureAI</span>
+      </div>
+      <p class="tagline">Turn any lecture into instant study materials</p>
+    </div>
+  </header>
+
+  <!-- ── Main Content ───────────────────────────────────────────────────── -->
+  <main class="main">
+
+    <!-- ── Upload / Record Card ──────────────────────────────────────────── -->
+    <section class="card upload-card" id="upload-section">
+      <h2 class="card-title">
+        <span class="step-badge">1</span> Upload or Record Your Lecture
+      </h2>
+
+      <!-- Tab selector -->
+      <div class="tabs">
+        <button class="tab active" data-tab="upload">📁 Upload File</button>
+        <button class="tab" data-tab="record">🎙️ Record Microphone</button>
+      </div>
+
+      <!-- ── File Upload Tab ────────────────────────────────────────── -->
+      <div class="tab-content active" id="tab-upload">
+        <div class="dropzone" id="dropzone">
+          <div class="dropzone-inner">
+            <div class="upload-icon">🎵</div>
+            <p class="dropzone-text">Drag & drop your audio file here</p>
+            <p class="dropzone-sub">MP3, WAV, M4A, OGG, WEBM (up to 50MB)</p>
+            <label class="btn btn-outline" for="file-input">Browse Files</label>
+            <input type="file" id="file-input" accept=".mp3,.wav,.m4a,.ogg,.webm,.mp4" hidden />
+          </div>
+        </div>
+        <div class="file-preview hidden" id="file-preview">
+          <span class="file-name" id="file-name-display"></span>
+          <button class="remove-btn" id="remove-file">✕</button>
+        </div>
+      </div>
+
+      <!-- ── Microphone Tab ─────────────────────────────────────────── -->
+      <div class="tab-content" id="tab-record">
+        <div class="recorder-box">
+          <div class="mic-visual" id="mic-visual">
+            <div class="mic-ring"></div>
+            <div class="mic-ring ring-2"></div>
+            <span class="mic-emoji">🎙️</span>
+          </div>
+          <div class="recorder-status" id="recorder-status">Click the button to start recording</div>
+          <div class="timer" id="timer">00:00</div>
+          <div class="recorder-controls">
+            <button class="btn btn-record" id="record-btn">⏺ Start Recording</button>
+            <button class="btn btn-stop hidden" id="stop-btn">⏹ Stop</button>
+          </div>
+          <audio class="audio-playback hidden" id="audio-playback" controls></audio>
+        </div>
+      </div>
+
+      <!-- ── Generate Button ────────────────────────────────────────── -->
+      <button class="btn btn-primary btn-generate" id="generate-btn" disabled>
+        <span class="btn-text">✨ Generate Notes</span>
+        <span class="btn-loader hidden">
+          <span class="spinner"></span> Processing...
+        </span>
+      </button>
+    </section>
+
+    <!-- ── Processing Overlay ─────────────────────────────────────────────── -->
+    <div class="processing-overlay hidden" id="processing-overlay">
+      <div class="processing-card">
+        <div class="processing-icon">⚡</div>
+        <h3>AI is analyzing your lecture...</h3>
+        <div class="progress-steps">
+          <div class="step" id="step-transcribe">🔊 Transcribing audio</div>
+          <div class="step" id="step-summarize">📋 Creating summary</div>
+          <div class="step" id="step-quiz">❓ Generating quiz</div>
+          <div class="step" id="step-flash">🃏 Making flashcards</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Results Section ────────────────────────────────────────────────── -->
+    <section class="results-section hidden" id="results-section">
+
+      <div class="results-header">
+        <h2>📚 Your Study Materials</h2>
+        <button class="btn btn-download" id="download-pdf-btn">
+          ⬇️ Download PDF
+        </button>
+      </div>
+
+      <!-- ── Tabs for results ───────────────────────────────────────── -->
+      <div class="result-tabs">
+        <button class="result-tab active" data-result="transcript">📝 Transcript</button>
+        <button class="result-tab" data-result="summary">📋 Summary</button>
+        <button class="result-tab" data-result="bullets">⭐ Key Points</button>
+        <button class="result-tab" data-result="quiz">❓ Quiz</button>
+        <button class="result-tab" data-result="flashcards">🃏 Flashcards</button>
+      </div>
+
+      <!-- ── Transcript ──────────────────────────────────────────────── -->
+      <div class="result-content active" id="result-transcript">
+        <div class="content-box">
+          <div class="content-label">Full Lecture Transcript</div>
+          <p id="transcript-text" class="transcript-text"></p>
+        </div>
+      </div>
+
+      <!-- ── Summary ────────────────────────────────────────────────── -->
+      <div class="result-content" id="result-summary">
+        <div class="content-box">
+          <div class="content-label">AI-Generated Summary</div>
+          <p id="summary-text" class="summary-text"></p>
+        </div>
+      </div>
+
+      <!-- ── Bullet Points ──────────────────────────────────────────── -->
+      <div class="result-content" id="result-bullets">
+        <div class="content-box">
+          <div class="content-label">Key Points to Remember</div>
+          <ul id="bullets-list" class="bullets-list"></ul>
+        </div>
+      </div>
+
+      <!-- ── Quiz ───────────────────────────────────────────────────── -->
+      <div class="result-content" id="result-quiz">
+        <div class="quiz-grid" id="quiz-grid"></div>
+      </div>
+
+      <!-- ── Flashcards ─────────────────────────────────────────────── -->
+      <div class="result-content" id="result-flashcards">
+        <p class="flash-hint">💡 Click a card to reveal the answer</p>
+        <div class="flashcard-grid" id="flashcard-grid"></div>
+      </div>
+
+    </section>
+
+    <!-- ── Error Toast ────────────────────────────────────────────────────── -->
+    <div class="toast hidden" id="error-toast">
+      <span class="toast-icon">⚠️</span>
+      <span id="toast-message">Something went wrong</span>
+      <button class="toast-close" id="toast-close">✕</button>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    Built with ❤️ using ElevenLabs + HuggingFace &nbsp;|&nbsp; Lecture Voice-to-Notes Generator
+  </footer>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
