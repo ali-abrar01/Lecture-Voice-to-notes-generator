@@ -6,7 +6,6 @@ Main Flask application file.
 from dotenv import load_dotenv
 load_dotenv()
 import os
-import json
 import tempfile
 from flask import Flask, request, jsonify, render_template, send_file
 from werkzeug.utils import secure_filename

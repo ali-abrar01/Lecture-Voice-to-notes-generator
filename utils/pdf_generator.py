@@ -7,7 +7,6 @@ Uses ReportLab (pure Python, no external tools needed).
 TO INSTALL: pip install reportlab
 """
 
-import os
 import tempfile
 import unicodedata
 from datetime import datetime
