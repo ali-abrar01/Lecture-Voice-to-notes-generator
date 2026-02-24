@@ -17,6 +17,9 @@ Lecture-voice to notes/
 │   └── index.html            ← Main web UI
 │
 ├── static/
+│   ├── favicon.ico           ← Site favicon
+│   ├── favicon-32x32.png     ← Favicon variants
+│   ├── favicon-16x16.png     ← Favicon variants
 │   ├── app.js                ← Frontend logic (recording, uploads, results)
 │   ├── style.css             ← Styling
 │   ├── css/                  ← Additional CSS (future use)
